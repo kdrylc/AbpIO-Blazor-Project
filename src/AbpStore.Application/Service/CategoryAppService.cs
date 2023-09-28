@@ -16,7 +16,7 @@ using Volo.Abp.Domain.Repositories;
 
 namespace AbpStore.Service
 {
-    [Authorize]
+    [Authorize(Permissions.AbpStorePermissions.Category.Default)]
     public class CategoryAppService:ApplicationService,ICategoryAppService
     {
         private readonly IRepository<Category, int> _cat;
@@ -28,8 +28,8 @@ namespace AbpStore.Service
             _db = db;
             _mapper = mapper;
         }
-        
 
+        [Authorize(Permissions.AbpStorePermissions.Category.Create)]
         public async Task<CategoryDto> CreateAsync(CategoryDto categoryDto)
         {
             var cat = await _cat.InsertAsync(new Category
@@ -47,6 +47,7 @@ namespace AbpStore.Service
                Created = DateTime.Now
             };
         }
+        [Authorize(Permissions.AbpStorePermissions.Category.Delete)]
 
         public async Task<int> DeleteAsync(int id)
         {
