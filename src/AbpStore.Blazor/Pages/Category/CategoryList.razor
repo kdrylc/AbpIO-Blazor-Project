@@ -1,0 +1,65 @@
+﻿@page "/category"
+@using AbpStore.DTO;
+@using AbpStore.IService;
+@inject ICategoryAppService cat
+@inject NavigationManager nav
+
+<div class="row mt-4">
+    <div class="col-6">
+        <h4 class="card-title text-info">Category</h4>
+    </div>
+
+    <div class="col-4 offset-2">
+        <a href="category/create" class="btn btn-primary form-control">Create New Category</a>
+    </div>
+
+    <div class="col-12 p-3">
+  
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var cat in Categories)
+                    {
+                        <tr>
+                            <td>@cat.Id</td>
+                            <td>@cat.Name</td>
+                            <td>@cat.Description</td>
+                        <td>
+                            <NavLink href="@($"/category/edit/{cat.Id}")" class="btn btn-outline-success ">Edit </NavLink>
+                            <button class="btn btn-danger" @onclick="(()=>HandleDelete(cat.Id))"> Delete</button>
+                        </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+    </div>
+
+</div>
+
+
+
+
+@code {
+    private List<CategoryDto> Categories { get; set; } = new List<CategoryDto>();
+    public int DeleteCategoryId { get; set; } = 0;
+    protected override async Task OnInitializedAsync()
+    {
+        Categories = await cat.GetListAsync();
+    }
+
+    public async Task HandleDelete(int id)
+    {
+        await Task.Delay(500);
+        DeleteCategoryId = id;
+        await cat.DeleteAsync(DeleteCategoryId);
+        nav.NavigateTo("category");
+
+    }
+
+}

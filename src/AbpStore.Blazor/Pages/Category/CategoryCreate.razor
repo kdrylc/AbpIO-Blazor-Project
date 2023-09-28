@@ -1,0 +1,67 @@
+﻿@page "/category/create"
+@page "/category/edit/{Id:int}"
+
+@using AbpStore.DTO;
+@using AbpStore.IService;
+
+@inject ICategoryAppService _categoryRepository
+@inject NavigationManager _navigationManager
+
+
+<div class="row my-2">
+    <h3 class="card-title text-primary mb-3 ml-3"> Category Create</h3>
+    <div class="col-12">
+
+       
+          <EditForm Model="Category" OnValidSubmit="UpsertCategory">
+              <DataAnnotationsValidator>  </DataAnnotationsValidator>
+            <div class="form-group">
+                <label>Name</label>
+                <InputText @bind-Value="Category.Name"></InputText>
+                <ValidationMessage For="(()=>Category.Name)"></ValidationMessage>
+            </div>
+            <div class="form-group">
+                <label>Desc.</label>
+                <InputText @bind-Value="Category.Description"></InputText>
+                <ValidationMessage For="(()=>Category.Description)"></ValidationMessage>
+            </div>
+            <div class="form-group py-2">
+                   <button type="submit" class="btn btn-primary">Add</button>
+                <NavLink href="category" class="btn btn-warning">
+                    Back To Categories
+                </NavLink>
+            </div>
+          </EditForm>  
+        
+
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private CategoryDto Category { get; set; } = new CategoryDto();
+    private string Title { get; set; } = "Create";
+
+    protected override async Task OnInitializedAsync()
+    {  
+            Category = await _categoryRepository.GetByIdAsync(Id);
+            Title = "Update";
+       
+    }
+
+    public async Task UpsertCategory()
+    {
+        if (Id == 0)
+        {
+            var result = await _categoryRepository.CreateAsync(Category);
+        }
+        else
+        {
+            var result = await _categoryRepository.UpdateAsync(Category);
+        }
+        _navigationManager.NavigateTo("category");
+    }
+
+}

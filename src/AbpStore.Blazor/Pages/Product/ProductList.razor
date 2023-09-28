@@ -1,0 +1,65 @@
+﻿@page "/product"
+@using AbpStore.DTO;
+@using AbpStore.IService;
+@inject IProductAppService prod
+@inject NavigationManager nav
+
+<div class="row mt-4">
+    <div class="col-6">
+        <h4 class="card-title text-info">Product</h4>
+    </div>
+
+    <div class="col-4 offset-2">
+        <a href="product/create" class="btn btn-primary form-control">Create New Product</a>
+    </div>
+
+    <div class="col-12 p-3">
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Summary</th>
+                    <th>Detail</th>
+                    <th>Category</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cat in Prod)
+                {
+                    <tr>
+                        <td>@cat.Id</td>
+                        <td>@cat.Name</td>
+                        <td>@cat.Summary</td>
+                        <td>@cat.Detail</td>
+                        <td>@cat.CategoryId</td>
+                        <td>
+                            <NavLink href="@($"/product/edit/{cat.Id}")" class="btn btn-outline-success ">Edit </NavLink>
+                            <button class="btn btn-danger" @onclick="(()=>HandleDelete(cat.Id))"> Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+@code {
+    private List<ProductDto> Prod { get; set; } = new List<ProductDto>();
+    public int DeleteProductId { get; set; } = 0;
+    protected override async Task OnInitializedAsync()
+    {
+        Prod = await prod.GetListAsync();
+    }
+
+    public async Task HandleDelete(int id)
+    {
+        await Task.Delay(500);
+        DeleteProductId = id;
+        await prod.DeleteAsync(DeleteProductId);
+        nav.NavigateTo("product");
+    }
+}
